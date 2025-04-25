@@ -6,8 +6,14 @@ import EditUserForm from './EditUserForm';
 const UserCard = ({ user }) => {
     const dispatch = useDispatch();
     const [isEditing, setIsEditing] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
     const handleDelete = () => {
+        setShowConfirmDelete(true); // Show the custom modal
+    };
+
+    const confirmDelete = () => {
+        setShowConfirmDelete(false); // Close the modal
         dispatch(deleteUserRequest());
         fetch(`https://jsonplaceholder.typicode.com/users/${user.id}`, {
             method: 'DELETE',
@@ -20,6 +26,10 @@ const UserCard = ({ user }) => {
                 }
             })
             .catch(error => dispatch(deleteUserFailure(error.message)));
+    };
+
+    const cancelDelete = () => {
+        setShowConfirmDelete(false); // Close the modal without deleting
     };
 
     return (
@@ -47,6 +57,26 @@ const UserCard = ({ user }) => {
                         </button>
                     </div>
                 </>
+            )}
+
+            {}
+            {showConfirmDelete && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3 className="modal-title">Confirm Delete</h3>
+                        <p className="modal-message">
+                            Are you sure you want to delete {user.name}?
+                        </p>
+                        <div className="modal-actions">
+                            <button className="card-button delete" onClick={confirmDelete}>
+                                Yes, Delete
+                            </button>
+                            <button className="card-button edit" onClick={cancelDelete}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
